@@ -1,7 +1,8 @@
 export default class DepthFirstSearch {
-    constructor(maze, setVisitedCells, width, height) {
+    constructor(maze, setVisitedCells, setTimeoutIds, width, height) {
         this.maze = maze;
         this.setVisitedCells = setVisitedCells;
+        this.setTimeoutIds = setTimeoutIds;
         this.width = width;
         this.height = height;
         this.dirs = [
@@ -53,7 +54,8 @@ export default class DepthFirstSearch {
                     }
                 }
             }
-            setTimeout(step, 100); // Delay for visualization
+            const timeout = setTimeout(step, 100); // Delay for visualization
+            this.setTimeoutIds((prev) => [...prev, timeout]);
         };
 
         step();

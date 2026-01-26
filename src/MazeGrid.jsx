@@ -7,48 +7,73 @@ import "./MazeGrid.css";
 function MazeGrid() {
     const [maze, setMaze] = useState([]);
     const [visitedCells, setVisitedCells] = useState(new Set());
+    const [timeoutIds, setTimeoutIds] = useState([]);
     const constructMaze = new ConstructMaze();
     const height = 20;
     const width = 20;
 
     const bfsSolver = useMemo(
-        () => new BreadthFirstSearch(maze, setVisitedCells, width, height),
-        [maze, setVisitedCells, width, height],
+        () =>
+            new BreadthFirstSearch(
+                maze,
+                setVisitedCells,
+                setTimeoutIds,
+                width,
+                height,
+            ),
+        [maze, setVisitedCells, setTimeoutIds, width, height],
     );
 
     const dfsSolver = useMemo(
-        () => new DepthFirstSearch(maze, setVisitedCells, width, height),
-        [maze, setVisitedCells, width, height],
+        () =>
+            new DepthFirstSearch(
+                maze,
+                setVisitedCells,
+                setTimeoutIds,
+                width,
+                height,
+            ),
+        [maze, setVisitedCells, setTimeoutIds, width, height],
     );
+
+    function clearTimeouts() {
+        timeoutIds.forEach((id) => clearTimeout(id));
+        setTimeoutIds([]);
+    }
+
+    function refreshMaze() {
+        clearTimeouts();
+        setVisitedCells(new Set());
+        setMaze(constructMaze.generateMaze(height, width));
+    }
+
+    function startSearch(algorithm) {
+        clearTimeouts();
+        setVisitedCells(new Set());
+
+        if (algorithm === "bfs") {
+            bfsSolver.bfs([1, 0]);
+        } else if (algorithm === "dfs") {
+            dfsSolver.dfs([1, 0]);
+        }
+    }
 
     return (
         <div className="maze-grid">
-            <button
-                className="maze-button"
-                onClick={() => {
-                    setVisitedCells(new Set());
-                    setMaze(constructMaze.generateMaze(height, width));
-                }}
-            >
+            <button className="maze-button" onClick={() => refreshMaze()}>
                 {maze.length !== 0 ? "Refresh Maze" : "Generate Maze"}
             </button>
             {maze.length !== 0 && (
                 <>
                     <button
                         className="maze-button"
-                        onClick={() => {
-                            setVisitedCells(new Set());
-                            bfsSolver.bfs([1, 0]);
-                        }}
+                        onClick={() => startSearch("bfs")}
                     >
                         Breadth First Search
                     </button>
                     <button
                         className="maze-button"
-                        onClick={() => {
-                            setVisitedCells(new Set());
-                            dfsSolver.dfs([1, 0]);
-                        }}
+                        onClick={() => startSearch("dfs")}
                     >
                         Depth First Search
                     </button>
