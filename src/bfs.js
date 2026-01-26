@@ -53,7 +53,7 @@ export default class BreadthFirstSearch {
                     }
                 }
             }
-            setTimeout(step, 200); // Delay for visualization
+            setTimeout(step, 100); // Delay for visualization
         };
 
         step();
